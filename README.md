@@ -44,9 +44,9 @@ type Item struct {
 
 item := Item{ Id: 1111, Name: "foobar" }
 
-res, err := goreq.Request{ 
-    Method: "POST", 
-    Uri: "http://www.google.com", 
+res, err := goreq.Request{
+    Method: "POST",
+    Uri: "http://www.google.com",
     Body: item,
 }.Do()
 ```
@@ -75,6 +75,12 @@ req.AddHeader("X-Custom", "somevalue")
 req.Do()
 ```
 
+There's also a basic auth helper:
+
+```go
+req.AddHeader("Authorization", BasicAuth("myusername", "mysecret"))
+```
+
 ## Setting timeouts
 
 GoReq supports 2 kind of timeouts. A general connection timeout and a request specific one. By default the connection timeout is of 1 second. There is no default for request timeout, which means it will wait forever.
@@ -88,9 +94,9 @@ goreq.SetConnectionTimeout(100 * time.Millisecond)
 And specify the request timeout doing:
 
 ```go
-res, err := goreq.Request{ 
+res, err := goreq.Request{
     Uri: "http://www.google.com",
-    Timeout: 500 * time.Millisecond, 
+    Timeout: 500 * time.Millisecond,
 }.Do()
 ```
 

@@ -2,6 +2,7 @@ package goreq
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"io/ioutil"
@@ -160,4 +161,11 @@ func (r Request) Do() (*Response, error) {
 		return nil, &Error{timeout: timeout, Err: err}
 	}
 	return newResponse(res), nil
+}
+
+// BasicAuth returns the value for an Authorization header
+// that uses Basic Authentication
+func BasicAuth(u, p string) string {
+	auth := u + ":" + p
+	return "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
 }

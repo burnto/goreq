@@ -243,6 +243,39 @@ func TestRequest(t *testing.T) {
 			})
 		})
 
+		g.Describe("Basic Auth", func() {
+			g.It("Should encode as expected", func() {
+				cases := []struct {
+					U    string
+					P    string
+					Want string
+				}{
+					{"a_user", "a_password", "Basic YV91c2VyOmFfcGFzc3dvcmQ="},
+					{"a_user", "", "Basic YV91c2VyOg=="},
+					{"", "", "Basic Og=="},
+					{"abcdefghijklmnopqrstuvwxyz", `%^&*()`, "Basic YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXo6JV4mKigp"},
+				}
+				for _, tt := range cases {
+					Expect(BasicAuth(tt.U, tt.P)).Should(Equal(tt.Want))
+				}
+			})
+			g.It("Should be added via AddHeader", func() {
+				expect := BasicAuth("a_user", "a_password")
+
+				ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					Expect(r.Header.Get("Authorization")).Should(Equal(expect))
+					w.WriteHeader(200)
+				}))
+				defer ts.Close()
+
+				req := Request{Uri: ts.URL}
+				req.AddHeader("Authorization", expect)
+				res, _ := req.Do()
+				Expect(res.StatusCode).Should(Equal(200))
+			})
+
+		})
+
 		g.Describe("Misc", func() {
 			g.It("Should offer to set request headers", func() {
 				ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
